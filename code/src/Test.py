@@ -1,6 +1,6 @@
 import json
 import os
-
+import hashlib
 from fastapi import FastAPI, File, UploadFile, HTTPException
 from email import message_from_bytes
 from email.policy import default
@@ -16,6 +16,7 @@ import pytesseract  # OCR for images
 from PIL import Image
 import docx  # For DOCX files
 import tools
+
 app = FastAPI()
 connection = sqlite3.connect(':memory:')
 cursor = connection.cursor()
@@ -26,7 +27,27 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)  # Ensure folder exists
 if not os.path.exists("static"):
     os.makedirs("static")
 
-cursor.execute("CREATE TABLE emails (id TEXT PRIMARY KEY, frm TEXT NOT NULL, subject TEXT NOT NULL, body INTEGER NOT NULL, attachment_path TEXT)")
+cursor.execute("""
+    CREATE TABLE IF NOT EXISTS emails (
+        id TEXT PRIMARY KEY,
+        frm TEXT NOT NULL,
+        subject TEXT NOT NULL,
+        body TEXT,
+        attachment_path TEXT,
+        hash TEXT,
+        request_type TEXT,
+        sub_request_type TEXT,
+        summary TEXT
+    )
+""")
+
+def generate_hash(text):
+    return hashlib.sha256(text.encode('utf-8')).hexdigest()
+
+def generate_email_hash(body, attachments):
+    combined_text = body + "\n".join(attachments)
+    return generate_hash(combined_text)
+
 
 # Request and Sub-Request Types stored in a list
 request_data = [
@@ -39,6 +60,10 @@ request_data = [
     ("Credit Card Services", "Lost or Stolen Card"),
     ("Credit Card Services", "Request Credit Limit Increase")
 ]
+
+@app.get("/")
+async def read_root():
+    return {"message": "Hello, FastAPI!"}
 
 @app.post("/add_request")
 async def add_request(request: dict):
@@ -83,21 +108,38 @@ async def read_mail(file: UploadFile = File(...)):
             if attachment_content:
                 attachment_texts.append(attachment_content)
 
-    # Combine extracted text with email body
     full_text = f"Email Body:\n{body}\n\nAttachments:\n" + "\n\n".join(attachment_texts)
 
-    # Insert some data
-    cursor.execute('INSERT OR IGNORE INTO emails (id, frm, subject, body, attachment_path) VALUES (?, ?, ?, ?, ?)', (frm+subject, frm, subject, body, json.dumps(attachment_paths)))
+    email_hash = generate_email_hash(body, attachment_texts)
 
-    # Commit the changes
-    connection.commit()
+    # Check for duplicates before inserting
+    cursor.execute("SELECT frm, subject, body,request_type,sub_request_type,summary FROM emails WHERE hash = ?", (email_hash,))
+    duplicate = cursor.fetchone()
 
-    # Close the connection
-    #connection.close()
+    if duplicate:
+        return {
+            "message": "Duplicate email detected.",
+            "previous_email": {
+                "from": duplicate[0],
+                "subject": duplicate[1],
+                "request_type": duplicate[3],
+                "sub_request_type": duplicate[4],
+                "summary": duplicate[5]
+            }
+        }
+
+    
 
     response_text = classify_and_summarize(full_text)
     try:
         response_json = json.loads(response_text)  # Convert response string to JSON
+        cursor.execute('INSERT OR IGNORE INTO emails (id, frm, subject, body, attachment_path, hash,request_type,sub_request_type,summary) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
+                   (frm + subject, frm, subject, body, json.dumps(attachment_paths), email_hash,response_json.get("request_type", "Unknown"),response_json.get("sub_request_type", "Unknown"),response_json.get("summary", "No summary provided")))
+        # Commit the changes
+        connection.commit()
+
+        # Close the connection
+        #connection.close()
     except json.JSONDecodeError:
         response_json = {"error": "Failed to parse AI response", "raw_response": response_text}
     return {
@@ -164,6 +206,8 @@ def extract_attachment_content(file_path):
     ext = ext.lower()
 
     if ext == ".pdf":
+        print("pdf file got it")
+        print(file_path)
         return extract_text_from_pdf(file_path)
     elif ext == ".txt":
         return extract_text_from_txt(file_path)
