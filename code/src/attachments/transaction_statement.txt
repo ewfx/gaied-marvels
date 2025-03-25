@@ -1,0 +1,6 @@
+Transaction Date: 15th March 2025
+Merchant: XYZ Electronics
+Amount: $350.00
+Transaction ID: TX123456789
+Payment Method: Credit Card
+Status: Completed

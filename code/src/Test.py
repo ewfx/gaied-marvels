@@ -15,12 +15,16 @@ import fitz  # PyMuPDF for PDF extraction
 import pytesseract  # OCR for images
 from PIL import Image
 import docx  # For DOCX files
+import tools
 app = FastAPI()
 connection = sqlite3.connect(':memory:')
 cursor = connection.cursor()
 
 UPLOAD_FOLDER = "attachments"
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)  # Ensure folder exists
+
+if not os.path.exists("static"):
+    os.makedirs("static")
 
 cursor.execute("CREATE TABLE emails (id TEXT PRIMARY KEY, frm TEXT NOT NULL, subject TEXT NOT NULL, body INTEGER NOT NULL, attachment_path TEXT)")
 
@@ -80,7 +84,7 @@ async def read_mail(file: UploadFile = File(...)):
                 attachment_texts.append(attachment_content)
 
     # Combine extracted text with email body
-    full_text = f"Email Body:\n{cleaned_body}\n\nAttachments:\n" + "\n\n".join(attachment_texts)
+    full_text = f"Email Body:\n{body}\n\nAttachments:\n" + "\n\n".join(attachment_texts)
 
     # Insert some data
     cursor.execute('INSERT OR IGNORE INTO emails (id, frm, subject, body, attachment_path) VALUES (?, ?, ?, ?, ?)', (frm+subject, frm, subject, body, json.dumps(attachment_paths)))
