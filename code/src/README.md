@@ -35,7 +35,7 @@ pip install -r requirements.txt
 
 If `requirements.txt` is missing, manually install required packages:
 ```bash
-pip install fastapi requests python-docx beautifulsoup4 openai sqlite3
+pip install fastapi requests python-docx beautifulsoup4 openai sqlite3 frontend
 ```
 
 ## Step 4: Run test.py
