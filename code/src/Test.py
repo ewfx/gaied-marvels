@@ -109,7 +109,7 @@ def convert_to_binary_data(filename):
 
 def ask_question(question):
     API_URL = "https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.1"
-    HEADERS = {"Authorization": "Bearer "}
+    HEADERS = {"Authorization": "Bearer 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"}
 
     payload = {"inputs": question}
 
