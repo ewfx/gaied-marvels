@@ -1,0 +1,35 @@
+Subject: Disputed Transaction on Credit Card
+From: john.doe@example.com
+To: support@bank.com
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="===============1506081742126769962=="
+
+--===============1506081742126769962==
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+
+
+Dear Bank Support,
+
+I am writing to report a disputed transaction on my credit card. On 15th Marc=
+h 2025, there was a charge of $350.00 from "XYZ Electronics" which I do not r=
+ecognize.
+
+Please investigate this matter. I have attached a copy of my transaction stat=
+ement for your reference.
+
+Thank you,
+John Doe
+Account Number: 1234-5678-9101
+
+--===============1506081742126769962==
+Content-Type: text/plain
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="transaction_statement.txt"
+MIME-Version: 1.0
+
+VHJhbnNhY3Rpb24gRGF0ZTogMTV0aCBNYXJjaCAyMDI1DQpNZXJjaGFudDogWFlaIEVsZWN0cm9u
+aWNzDQpBbW91bnQ6ICQzNTAuMDANClRyYW5zYWN0aW9uIElEOiBUWDEyMzQ1Njc4OQ0KUGF5bWVu
+dCBNZXRob2Q6IENyZWRpdCBDYXJkDQpTdGF0dXM6IENvbXBsZXRlZA==
+
+--===============1506081742126769962==--
