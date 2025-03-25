@@ -84,13 +84,21 @@ async def get_requests():
 
 @app.post("/read")
 async def read_mail(file: UploadFile = File(...)):
-    content = await file.read()
-    email_message = message_from_bytes(content, policy=default)
+    if not file.filename.endswith('.eml'):
+        raise HTTPException(status_code=400, detail="Invalid file type. Please upload a .eml file.")
+    
+    try:
+        content = await file.read()
+        email_message = message_from_bytes(content, policy=default)
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Failed to read email content: {e}")
 
-    # Extracting some basic information from the email
-    subject = email_message['subject']
-    frm = email_message['from']
-    to = email_message['to']
+    subject = email_message.get('subject', 'No Subject')
+    frm = email_message.get('from', 'Unknown Sender')
+
+    if email_message.get_body(preferencelist=('plain')) is None:
+        raise HTTPException(status_code=400, detail="Invalid email: No plain text body found.")
+
     body = email_message.get_body(preferencelist=('plain')).get_content()
 
     # Extract attachments
@@ -120,15 +128,13 @@ async def read_mail(file: UploadFile = File(...)):
         return {
             "message": "Duplicate email detected.",
             "previous_email": {
-                "from": duplicate[0],
+                "sender": duplicate[0],
                 "subject": duplicate[1],
                 "request_type": duplicate[3],
                 "sub_request_type": duplicate[4],
                 "summary": duplicate[5]
             }
         }
-
-    
 
     response_text = classify_and_summarize(full_text)
     try:
@@ -143,6 +149,8 @@ async def read_mail(file: UploadFile = File(...)):
     except json.JSONDecodeError:
         response_json = {"error": "Failed to parse AI response", "raw_response": response_text}
     return {
+        "sender": frm,
+        "subject": subject,
         "request_type": response_json.get("request_type", "Unknown"),
         "sub_request_type": response_json.get("sub_request_type", "Unknown"),
         "summary": response_json.get("summary", "No summary provided")
