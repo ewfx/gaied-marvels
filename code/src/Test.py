@@ -1,4 +1,6 @@
 import json
+import os
+
 from fastapi import FastAPI, File, UploadFile, HTTPException
 from email import message_from_bytes
 from email.policy import default
@@ -9,11 +11,18 @@ from sqlite3 import Error as Err
 from langchain_community.llms import HuggingFacePipeline
 from langchain.prompts import PromptTemplate
 import requests
+import fitz  # PyMuPDF for PDF extraction
+import pytesseract  # OCR for images
+from PIL import Image
+import docx  # For DOCX files
 app = FastAPI()
 connection = sqlite3.connect(':memory:')
 cursor = connection.cursor()
 
-cursor.execute("CREATE TABLE emails (id TEXT PRIMARY KEY, frm TEXT NOT NULL, subject TEXT NOT NULL, body INTEGER NOT NULL, attachment BLOB)")
+UPLOAD_FOLDER = "attachments"
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)  # Ensure folder exists
+
+cursor.execute("CREATE TABLE emails (id TEXT PRIMARY KEY, frm TEXT NOT NULL, subject TEXT NOT NULL, body INTEGER NOT NULL, attachment_path TEXT)")
 
 # Request and Sub-Request Types stored in a list
 request_data = [
@@ -55,21 +64,34 @@ async def read_mail(file: UploadFile = File(...)):
     to = email_message['to']
     body = email_message.get_body(preferencelist=('plain')).get_content()
 
-    cleaned_body = clean_email_body(body)
+    # Extract attachments
+    attachment_paths = []
+    attachment_texts = []
+    for part in email_message.iter_attachments():
+        filename = part.get_filename()
+        if filename:
+            file_path = os.path.join(UPLOAD_FOLDER, filename)
+            with open(file_path, "wb") as f:
+                f.write(part.get_payload(decode=True))  # Save attachment
+            attachment_paths.append(file_path)
+            # Parse the content of the attachment
+            attachment_content = extract_attachment_content(file_path)
+            if attachment_content:
+                attachment_texts.append(attachment_content)
+
+    # Combine extracted text with email body
+    full_text = f"Email Body:\n{cleaned_body}\n\nAttachments:\n" + "\n\n".join(attachment_texts)
+
     # Insert some data
-    cursor.execute('INSERT OR IGNORE INTO emails (id, frm, subject, body) VALUES (?, ?, ?, ?)', (frm+subject, frm, subject, body))
+    cursor.execute('INSERT OR IGNORE INTO emails (id, frm, subject, body, attachment_path) VALUES (?, ?, ?, ?, ?)', (frm+subject, frm, subject, body, json.dumps(attachment_paths)))
 
     # Commit the changes
     connection.commit()
 
-    # Query the data
-    cursor.execute('SELECT * FROM emails')
-    rows = cursor.fetchall()
-
     # Close the connection
     #connection.close()
 
-    response_text = classify_and_summarize(body)
+    response_text = classify_and_summarize(full_text)
     try:
         response_json = json.loads(response_text)  # Convert response string to JSON
     except json.JSONDecodeError:
@@ -79,12 +101,6 @@ async def read_mail(file: UploadFile = File(...)):
         "sub_request_type": response_json.get("sub_request_type", "Unknown"),
         "summary": response_json.get("summary", "No summary provided")
     }
-
-def clean_email_body(body):
-    soup = BeautifulSoup(body, "html.parser")
-    text = soup.get_text()  # Remove HTML tags
-    text = re.sub(r'\s+', ' ', text)  # Remove extra spaces
-    return text.strip()
 
 def convert_to_binary_data(filename):
     with open(filename, 'rb') as file:
@@ -137,3 +153,54 @@ def extract_json(response_text):
     except Exception as e:
         print(f"Error extracting JSON: {e}")
         return None
+
+def extract_attachment_content(file_path):
+    """Extracts text content from attachments based on file type."""
+    _, ext = os.path.splitext(file_path)
+    ext = ext.lower()
+
+    if ext == ".pdf":
+        return extract_text_from_pdf(file_path)
+    elif ext == ".txt":
+        return extract_text_from_txt(file_path)
+    elif ext == ".docx":
+        return extract_text_from_docx(file_path)
+    elif ext in [".png", ".jpg", ".jpeg"]:
+        return extract_text_from_image(file_path)
+    else:
+        return f"[Unsupported file type: {ext}]"
+
+def extract_text_from_pdf(file_path):
+    """Extracts text from a PDF using PyMuPDF (fitz)."""
+    text = ""
+    try:
+        with fitz.open(file_path) as pdf:
+            for page in pdf:
+                text += page.get_text("text") + "\n"
+    except Exception as e:
+        return f"[Error reading PDF: {e}]"
+    return text.strip()
+
+def extract_text_from_txt(file_path):
+    """Extracts text from a TXT file."""
+    try:
+        with open(file_path, "r", encoding="utf-8") as file:
+            return file.read().strip()
+    except Exception as e:
+        return f"[Error reading TXT file: {e}]"
+
+def extract_text_from_docx(file_path):
+    """Extracts text from a DOCX file using python-docx."""
+    try:
+        doc = docx.Document(file_path)
+        return "\n".join([p.text for p in doc.paragraphs]).strip()
+    except Exception as e:
+        return f"[Error reading DOCX file: {e}]"
+
+def extract_text_from_image(file_path):
+    """Extracts text from an image using OCR (Tesseract)."""
+    try:
+        image = Image.open(file_path)
+        return pytesseract.image_to_string(image).strip()
+    except Exception as e:
+        return f"[Error reading image: {e}]"
