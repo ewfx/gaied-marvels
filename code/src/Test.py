@@ -214,8 +214,6 @@ def extract_attachment_content(file_path):
     ext = ext.lower()
 
     if ext == ".pdf":
-        print("pdf file got it")
-        print(file_path)
         return extract_text_from_pdf(file_path)
     elif ext == ".txt":
         return extract_text_from_txt(file_path)
