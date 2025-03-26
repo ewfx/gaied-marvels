@@ -1,60 +1,71 @@
-# 🚀 Project Name
+# 🚀 GAIED Marvels
+
+A fast and simple setup guide to get started with the GAIED Marvels project.
 
 ## 📌 Table of Contents
-- [Introduction](#introduction)
-- [Demo](#demo)
-- [Inspiration](#inspiration)
-- [What It Does](#what-it-does)
-- [How We Built It](#how-we-built-it)
-- [Challenges We Faced](#challenges-we-faced)
-- [How to Run](#how-to-run)
-- [Tech Stack](#tech-stack)
-- [Team](#team)
+- [Introduction](#-introduction)
+- [Demo](#-demo)
+- [Inspiration](#-inspiration)
+- [What It Does](#-what-it-does)
+- [How We Built It](#-how-we-built-it)
+- [Challenges We Faced](#-challenges-we-faced)
+- [How to Run](#-how-to-run)
+- [Tech Stack](#-tech-stack)
+- [Team](#-team)
 
 ---
 
 ## 🎯 Introduction
-A brief overview of your project and its purpose. Mention which problem statement are your attempting to solve. Keep it concise and engaging.
+GAIED Marvels is a cutting-edge project designed for email classification and summarization. It processes incoming emails to extract and return key elements such as requests, subrequests, and summaries. The system also includes an email orchestrator and performs document classification to streamline information management.
 
 ## 🎥 Demo
-🔗 [Live Demo](#) (if applicable)  
 📹 [Video Demo](#) (if applicable)  
 🖼️ Screenshots:
-
 ![Screenshot 1](link-to-image)
 
 ## 💡 Inspiration
-What inspired you to create this project? Describe the problem you're solving.
+Inspired by the need to [explain what motivated you to build this project].
 
 ## ⚙️ What It Does
-Explain the key features and functionalities of your project.
+GAIED Marvels provides [describe the main features and functionalities].
 
 ## 🛠️ How We Built It
-Briefly outline the technologies, frameworks, and tools used in development.
+We utilized cutting-edge technologies including Python and Uvicorn to deliver a robust and efficient application.
 
 ## 🚧 Challenges We Faced
-Describe the major technical or non-technical challenges your team encountered.
+Throughout development, we encountered challenges such as free to use LLMs, however we utilized Hugging Face's open source model.
 
 ## 🏃 How to Run
 1. Clone the repository  
-   ```sh
-   git clone https://github.com/your-repo.git
+   ```bash
+   git clone https://github.com/ewfx/gaied-marvels
+   cd gaied-marvels/code/src
    ```
-2. Install dependencies  
-   ```sh
-   npm install  # or pip install -r requirements.txt (for Python)
+
+2. Set up a virtual environment  
+   ```bash
+   python -m venv venv
+   source venv/bin/activate  # On Windows use `venv\Scripts\activate`
    ```
-3. Run the project  
-   ```sh
-   npm start  # or python app.py
+
+3. Install dependencies  
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+4. Run the application  
+   ```bash
+   uvicorn main:app --reload
    ```
 
 ## 🏗️ Tech Stack
-- 🔹 Frontend: React / Vue / Angular
-- 🔹 Backend: Node.js / FastAPI / Django
-- 🔹 Database: PostgreSQL / Firebase
-- 🔹 Other: OpenAI API / Twilio / Stripe
+- 🔹 **Backend**: Python, Uvicorn
 
 ## 👥 Team
-- **Your Name** - [GitHub](#) | [LinkedIn](#)
-- **Teammate 2** - [GitHub](#) | [LinkedIn](#)
+- **Mulki** 
+- **Deepak** 
+- **Anand** 
+- **Santhosh** 
+- **Rahul** 
+
+---
