@@ -23,10 +23,10 @@ GAIED Marvels is a cutting-edge project designed for email classification and su
 https://www.loom.com/share/46624aed81a74be48b8a0b74bf56df86?sid=04633a57-8369-41c1-8538-00cd8669bf3b
 
 ## 💡 Inspiration
-Inspired by the need to [explain what motivated you to build this project].
+Transforming raw data into actionable insights—this project streamlines financial service requests with AI-driven classification, ensuring accuracy, efficiency, and seamless automation for a smarter banking experience.
 
 ## ⚙️ What It Does
-GAIED Marvels provides [describe the main features and functionalities].
+This project uses AI to classify email-based service requests, extract key details like request numbers and specific data, and streamline processing. It enhances efficiency, reduces manual effort, and ensures accurate handling of financial inquiries.
 
 ## 🛠️ How We Built It
 We utilized cutting-edge technologies including Python and Uvicorn to deliver a robust and efficient application.
