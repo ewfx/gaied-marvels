@@ -295,7 +295,7 @@ def create_app() -> FastAPI:
     async def get_requests():
         return email_processor.request_types
 
-    @app.post("/read")
+    @app.post("/process_email")
     async def read_mail(file: UploadFile = File(...)):
         return email_processor.process_email(file)
 
