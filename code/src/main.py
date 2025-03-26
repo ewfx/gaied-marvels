@@ -59,9 +59,11 @@ class EmailProcessor:
         """Initialize default request types."""
         return [
             ("Account Management", "Update Contact Details"),
+            ("Account Management", "Forgot Credentials - Username Password"),
             ("Account Management", "Close Account"),
             ("Transaction Issues", "Failed Transaction"),
             ("Transaction Issues", "Disputed Transaction"),
+            ("Transaction Issues", "Refund"),
             ("Loan Services", "Apply for Loan"),
             ("Loan Services", "Loan Repayment Issues"),
             ("Credit Card Services", "Lost or Stolen Card"),

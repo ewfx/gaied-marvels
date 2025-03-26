@@ -19,9 +19,8 @@ A fast and simple setup guide to get started with the GAIED Marvels project.
 GAIED Marvels is a cutting-edge project designed for email classification and summarization. It processes incoming emails to extract and return key elements such as requests, subrequests, and summaries. The system also includes an email orchestrator and performs document classification to streamline information management.
 
 ## 🎥 Demo
-📹 [Video Demo](#) (if applicable)  
-🖼️ Screenshots:
-![Screenshot 1](link-to-image)
+📹 [Video Demo]
+https://www.loom.com/share/46624aed81a74be48b8a0b74bf56df86?sid=04633a57-8369-41c1-8538-00cd8669bf3b
 
 ## 💡 Inspiration
 Inspired by the need to [explain what motivated you to build this project].
