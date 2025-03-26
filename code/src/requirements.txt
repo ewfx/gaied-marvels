@@ -1,0 +1,13 @@
+bs4
+langchain
+fitz
+pytesseract
+docx
+tools
+fastapi
+langchain_community
+frontend
+requests 
+python-docx 
+beautifulsoup4
+python-multipart
