@@ -1,9 +1,29 @@
-Subject: Loan Payment Reminder
-From: notifications@bank.com
-To: customer@bank.com
+Subject: Disputed Transaction on Credit Card
+From: john.doe@example.com
+To: support@bank.com
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="===============1506081742126769962=="
+
+--===============1506081742126769962==
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
-MIME-Version: 1.0
+
 
 Dear Bank Support, I have not received refund of $50 which is due on March 25th. Please let me know
 what's the status of the refund and when I can receive it.
+
+Thank you,
+Alex
+Account Number: 678626532
+
+--===============1506081742126769962==
+Content-Type: text/plain
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="transaction_statement.txt"
+MIME-Version: 1.0
+
+VHJhbnNhY3Rpb24gRGF0ZTogMTV0aCBNYXJjaCAyMDI1DQpNZXJjaGFudDogWFlaIEVsZWN0cm9u
+aWNzDQpBbW91bnQ6ICQzNTAuMDANClRyYW5zYWN0aW9uIElEOiBUWDEyMzQ1Njc4OQ0KUGF5bWVu
+dCBNZXRob2Q6IENyZWRpdCBDYXJkDQpTdGF0dXM6IENvbXBsZXRlZA==
+
+--===============1506081742126769962==--

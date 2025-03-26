@@ -277,7 +277,7 @@ def create_app() -> FastAPI:
     async def read_root():
         return {"message": "Email Processing Service"}
 
-    @app.post("/add_request")
+    @app.post("/requests")
     async def add_request(request: dict):
         category = request.get("category")
         request_type = request.get("request_type")
@@ -291,7 +291,7 @@ def create_app() -> FastAPI:
             "updated_data": email_processor.request_types
         }
 
-    @app.get("/get_requests")
+    @app.get("/requests")
     async def get_requests():
         return email_processor.request_types
 
